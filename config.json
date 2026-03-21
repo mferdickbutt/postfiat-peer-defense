@@ -1,0 +1,20 @@
+{
+  "thresholds": {
+    "peer_count_floor": 5,
+    "scoring_latency_ceiling_ms": 500,
+    "ledger_sync_lag_max_seconds": 30,
+    "sustained_breach_intervals": 3
+  },
+  "monitoring": {
+    "poll_interval_seconds": 30,
+    "log_path": "/home/postfiat/peer-defense/logs/defense.log"
+  },
+  "response": {
+    "peer_reconnect_attempts": 3,
+    "firewall_ban_duration_minutes": 60
+  },
+  "postfiatd": {
+    "host": "127.0.0.1",
+    "port": 5005
+  }
+}
