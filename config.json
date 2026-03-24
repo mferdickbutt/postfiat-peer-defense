@@ -26,5 +26,17 @@
     "validator_keys_path": "/home/postfiat/validator-health-telemetry/keys/validator-keys.json",
     "fee_payer_seed_env": "XRPL_FEE_PAYER_SEED",
     "dry_run_default": true
+  },
+  "unl_enforcement": {
+    "rippled_cfg_path": "/home/postfiat/.config/rippled/rippled.cfg",
+    "trusted_validators_section": "validators",
+    "peer_filter_reload_command": [
+      "systemctl",
+      "restart",
+      "peer-defense"
+    ],
+    "warn_cooldown_minutes": 60,
+    "alert_log_path": "/home/postfiat/peer-defense/logs/unl_enforcement_alerts.jsonl",
+    "recheck_schedule_path": "/home/postfiat/peer-defense/logs/unl_warn_rechecks.jsonl"
   }
 }

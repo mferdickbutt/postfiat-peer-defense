@@ -128,6 +128,24 @@ class UnlVoteTallyTestCase(unittest.TestCase):
         self.assertIn("[TALLY] target=nHTargetPeerRed11111111111111111111111111 flags=3 endorses=0", output)
         self.assertIn("[REPORT] target=nHTargetPeerRed11111111111111111111111111 action=jail", output)
 
+    def test_cli_can_write_machine_readable_health_report(self):
+        report_path = self.temp_path / "health-report.json"
+
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            exit_code = main(["--simulate", "--report-out", str(report_path)])
+
+        output = stdout.getvalue()
+        written_report = json.loads(report_path.read_text())
+
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(report_path.exists())
+        self.assertIn("[REPORT] json_path=", output)
+        self.assertIn("generated_at_utc", written_report)
+        self.assertEqual(written_report["ingested_vote_count"], 6)
+        self.assertEqual(written_report["tallies"][0]["recommended_action"], "maintain")
+        self.assertEqual(written_report["tallies"][1]["recommended_action"], "jail")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -5,6 +5,8 @@ The repo now includes two operational paths:
 
 - `peer_defense.py` for peer reconnection and anomaly response
 - `unl_voting.py` for UNL peer health voting transactions on XRPL
+- `unl_vote_tally.py` for deterministic UNL vote aggregation and health reports
+- `unl_governance_enforcer.py` for automated jail/warn enforcement against `rippled.cfg`
 
 ## Features
 
@@ -15,6 +17,8 @@ The repo now includes two operational paths:
 - Firewall rule rotation on critical breaches
 - UNL peer health vote construction with signed XRPL memos
 - Dry-run or on-ledger submission flow for validator governance votes
+- Deterministic UNL tally reports with recommended `maintain`, `warn`, or `jail` actions
+- Automated trusted-validator removal plus warn re-check scheduling
 
 ## Requirements
 
@@ -71,6 +75,14 @@ Edit `config.json`:
     "validator_keys_path": "/home/postfiat/validator-health-telemetry/keys/validator-keys.json",
     "fee_payer_seed_env": "XRPL_FEE_PAYER_SEED",
     "dry_run_default": true
+  },
+  "unl_enforcement": {
+    "rippled_cfg_path": "/home/postfiat/.config/rippled/rippled.cfg",
+    "trusted_validators_section": "validators",
+    "peer_filter_reload_command": ["systemctl", "restart", "peer-defense"],
+    "warn_cooldown_minutes": 60,
+    "alert_log_path": "/home/postfiat/peer-defense/logs/unl_enforcement_alerts.jsonl",
+    "recheck_schedule_path": "/home/postfiat/peer-defense/logs/unl_warn_rechecks.jsonl"
   }
 }
 ```
@@ -110,6 +122,41 @@ python3 unl_voting.py --input /path/to/peer_scores.jsonl --submit
 
 If `XRPL_FEE_PAYER_SEED` is not set, `unl_voting.py` will stay in dry-run mode
 and use a generated ephemeral wallet only for local transaction signing.
+
+## UNL Vote Tally Usage
+
+Aggregate signed vote payloads or XRPL memo transactions into a deterministic
+health report:
+
+```bash
+python3 unl_vote_tally.py --input /path/to/unl-vote-transactions.json
+```
+
+Write the machine-readable report for downstream automation:
+
+```bash
+python3 unl_vote_tally.py --input /path/to/unl-vote-transactions.json --report-out /tmp/unl-health-report.json
+```
+
+Use the built-in simulated tally dataset:
+
+```bash
+python3 unl_vote_tally.py --simulate --report-out /tmp/unl-health-report.json
+```
+
+## Governance Enforcement Usage
+
+Consume the tally report and enforce governance decisions locally:
+
+```bash
+python3 unl_governance_enforcer.py --config /home/postfiat/peer-defense/config.json --report /tmp/unl-health-report.json
+```
+
+Action mapping:
+
+- `jail`: remove the validator from the static `[validators]` trusted list, write `rippled.cfg`, and run the configured peer-filter reload command
+- `warn`: append a structured alert log entry and append a re-evaluation schedule entry after the configured cooldown window
+- `maintain`: log a terminal no-op and leave configuration unchanged
 
 ## UNL Voting Input Schema
 
@@ -214,6 +261,22 @@ Peer Vote: nHMockFlaggedValidator222222222222222222222222
   "validator_signature": "ED..."
 }
 [DRY_RUN] signed_tx_hash=F00DBABE...
+```
+
+## Example Governance Enforcement Output
+
+```text
+========================================================================
+UNL Governance Enforcement
+========================================================================
+[INGEST] report_path=/tmp/unl-health-report.json generated_at=2026-03-24T00:30:00Z tallies=3 active_validators=4
+[INGEST] target=nHJailedValidator111111111111111111111111111 action=jail flags=3 endorses=0 participation=75.00% flag_ratio=100.00%
+[INGEST] target=nHWarnedValidator222222222222222222222222222 action=warn flags=1 endorses=1 participation=75.00% flag_ratio=50.00%
+[PLAN] jail_targets=1 warn_targets=1 maintain_targets=1
+[CONFIG] write_status=updated removed=["nHJailedValidator111111111111111111111111111"]
+[RELOAD] command=systemctl restart peer-defense exit_code=0
+[ALERT] target=nHWarnedValidator222222222222222222222222222 log_path=/home/postfiat/peer-defense/logs/unl_enforcement_alerts.jsonl flag_ratio=50.00% participation=75.00%
+[SCHEDULE] target=nHWarnedValidator222222222222222222222222222 recheck_not_before=2026-03-24T01:30:00Z cooldown_minutes=60 schedule_path=/home/postfiat/peer-defense/logs/unl_warn_rechecks.jsonl
 ```
 
 ## License

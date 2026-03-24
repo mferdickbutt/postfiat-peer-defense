@@ -1,0 +1,1 @@
+{"cooldown_minutes": 90, "event": "UNL_WARN_RECHECK_SCHEDULED", "flag_ratio": 0.6666666666666666, "participation_ratio": 0.75, "recheck_not_before_utc": "2026-03-24T05:13:46Z", "recommended_action": "warn", "report_path": "demo/enforcement-demo-health-report.json", "target_validator_address": "nHWarnedValidator222222222222222222222222222", "timestamp": "2026-03-24T03:43:46Z"}

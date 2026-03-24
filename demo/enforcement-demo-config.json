@@ -1,0 +1,10 @@
+{
+  "unl_enforcement": {
+    "rippled_cfg_path": "demo/enforcement-demo-rippled.cfg",
+    "trusted_validators_section": "validators",
+    "peer_filter_reload_command": ["python3", "-c", "print('peer-filtering-reloaded')"],
+    "warn_cooldown_minutes": 90,
+    "alert_log_path": "demo/enforcement-alerts.jsonl",
+    "recheck_schedule_path": "demo/enforcement-rechecks.jsonl"
+  }
+}

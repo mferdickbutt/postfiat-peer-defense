@@ -1,0 +1,36 @@
+{
+  "generated_at_utc": "2026-03-24T03:43:46Z",
+  "ingested_vote_count": 6,
+  "deduped_vote_count": 6,
+  "active_validator_count": 4,
+  "tallies": [
+    {
+      "target_validator_address": "nHJailedValidator111111111111111111111111111",
+      "flag_votes": 3,
+      "endorse_votes": 0,
+      "total_votes": 3,
+      "voters_participating": 3,
+      "active_validator_count": 4,
+      "participation_ratio": 0.75,
+      "flag_ratio": 1.0,
+      "endorse_ratio": 0.0,
+      "quorum_met": true,
+      "recommended_action": "jail",
+      "threshold_reason": "jail threshold met: flag ratio 100.00% > 66.67% with participation 75.00% > 50.00%"
+    },
+    {
+      "target_validator_address": "nHWarnedValidator222222222222222222222222222",
+      "flag_votes": 2,
+      "endorse_votes": 1,
+      "total_votes": 3,
+      "voters_participating": 3,
+      "active_validator_count": 4,
+      "participation_ratio": 0.75,
+      "flag_ratio": 0.6666666666666666,
+      "endorse_ratio": 0.3333333333333333,
+      "quorum_met": true,
+      "recommended_action": "warn",
+      "threshold_reason": "warn threshold met: flag ratio 66.67% >= 50.00% with participation 75.00% > 50.00%"
+    }
+  ]
+}

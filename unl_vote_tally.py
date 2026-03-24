@@ -512,6 +512,38 @@ def render_report(report: UnlHealthReport, config: TallyConfig) -> None:
         )
 
 
+def validator_tally_to_dict(tally: ValidatorTally) -> dict[str, Any]:
+    return {
+        "target_validator_address": tally.target_validator_address,
+        "flag_votes": tally.flag_votes,
+        "endorse_votes": tally.endorse_votes,
+        "total_votes": tally.total_votes,
+        "voters_participating": tally.voters_participating,
+        "active_validator_count": tally.active_validator_count,
+        "participation_ratio": tally.participation_ratio,
+        "flag_ratio": tally.flag_ratio,
+        "endorse_ratio": tally.endorse_ratio,
+        "quorum_met": tally.quorum_met,
+        "recommended_action": tally.recommended_action,
+        "threshold_reason": tally.threshold_reason,
+    }
+
+
+def report_to_dict(report: UnlHealthReport) -> dict[str, Any]:
+    return {
+        "generated_at_utc": format_utc(utc_now()),
+        "ingested_vote_count": report.ingested_vote_count,
+        "deduped_vote_count": report.deduped_vote_count,
+        "active_validator_count": report.active_validator_count,
+        "tallies": [validator_tally_to_dict(tally) for tally in report.tallies],
+    }
+
+
+def write_report_json(output_path: Path, report: UnlHealthReport) -> Path:
+    output_path.write_text(json.dumps(report_to_dict(report), indent=2))
+    return output_path
+
+
 def build_simulated_signed_payload(
     *,
     voter: str,
@@ -661,6 +693,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
         default=str(DEFAULT_JAIL_FLAG_RATIO),
         help="Jail threshold as 0..1 or 0..100",
     )
+    parser.add_argument("--report-out", help="Write the deterministic health report as JSON to this path")
 
     return parser
 
@@ -704,6 +737,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         render_ingestion(votes, warnings, report)
         render_tallies(report)
         render_report(report, config)
+        if args.report_out:
+            output_path = write_report_json(Path(args.report_out), report)
+            print(f"[REPORT] json_path={output_path}")
         return 0
     except (ValueError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
