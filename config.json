@@ -16,5 +16,15 @@
   "postfiatd": {
     "host": "127.0.0.1",
     "port": 5005
+  },
+  "unl_voting": {
+    "uptime_min_pct": 0.98,
+    "latency_max_ms": 500,
+    "consensus_min_pct": 0.95,
+    "last_seen_max_age_seconds": 900,
+    "xrpl_rpc_url": "http://127.0.0.1:5005",
+    "validator_keys_path": "/home/postfiat/validator-health-telemetry/keys/validator-keys.json",
+    "fee_payer_seed_env": "XRPL_FEE_PAYER_SEED",
+    "dry_run_default": true
   }
 }

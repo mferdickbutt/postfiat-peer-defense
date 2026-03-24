@@ -1,0 +1,18 @@
+[
+  {
+    "validator_public_key": "nHMockHealthyValidator111111111111111111111111",
+    "uptime_pct": 99.4,
+    "scoring_latency_ms": 85,
+    "consensus_participation_pct": 99.2,
+    "last_seen_utc": "2035-01-01T00:00:00Z",
+    "collected_at": "2035-01-01T00:00:05Z"
+  },
+  {
+    "validator_public_key": "nHMockFlaggedValidator222222222222222222222222",
+    "uptime_pct": 91.0,
+    "scoring_latency_ms": 750,
+    "consensus_participation_pct": 82.0,
+    "last_seen_utc": "2026-03-23T00:00:00Z",
+    "collected_at": "2026-03-23T00:00:05Z"
+  }
+]
