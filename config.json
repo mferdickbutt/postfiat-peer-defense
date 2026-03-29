@@ -38,5 +38,16 @@
     "warn_cooldown_minutes": 60,
     "alert_log_path": "/home/postfiat/peer-defense/logs/unl_enforcement_alerts.jsonl",
     "recheck_schedule_path": "/home/postfiat/peer-defense/logs/unl_warn_rechecks.jsonl"
+  },
+  "amendment_execution": {
+    "supermajority_threshold": 0.8,
+    "known_proposer_count": 3,
+    "poll_accounts": [
+      "rfp8CbLYknuLU8qB4RTh7krnLZ6wKnU2JY",
+      "rM1D5WaUuWDYxQSomuB7RvABvu68VWQiDk",
+      "r3Kp55Nr163iMfVpAZSR6kPXhw8BjkpAWc"
+    ],
+    "proposal_window_seconds": 600,
+    "xrpl_rpc_url": "https://s.altnet.rippletest.net:51234"
   }
 }

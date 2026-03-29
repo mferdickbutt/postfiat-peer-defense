@@ -431,7 +431,7 @@ def build_accountset_transaction(
 
     if metadata.validated_ledger_sequence is not None:
         accountset_kwargs["last_ledger_sequence"] = metadata.validated_ledger_sequence + DEFAULT_LEDGER_BUFFER
-    if metadata.network_id is not None:
+    if metadata.network_id is not None and metadata.network_id > 1024:
         accountset_kwargs["network_id"] = metadata.network_id
 
     return AccountSet(**accountset_kwargs)
@@ -459,7 +459,7 @@ def submit_vote_transaction(
         "account": wallet_context.wallet.address,
         "memos": [memo],
     }
-    if metadata.network_id is not None:
+    if metadata.network_id is not None and metadata.network_id > 1024:
         accountset_kwargs["network_id"] = metadata.network_id
     accountset = AccountSet(**accountset_kwargs)
     response = submit_and_wait(accountset, client, wallet_context.wallet, check_fee=False)

@@ -308,6 +308,22 @@ def shell_join(command: tuple[str, ...]) -> str:
     return " ".join(shlex.quote(part) for part in command)
 
 
+def build_jail_alert_entry(tally: HealthReportTally, report_path: Path) -> dict[str, Any]:
+    return {
+        "timestamp": format_utc(utc_now()),
+        "event": "UNL_JAIL_ENFORCED",
+        "report_path": str(report_path),
+        "target_validator_address": tally.target_validator_address,
+        "recommended_action": tally.recommended_action,
+        "flag_votes": tally.flag_votes,
+        "endorse_votes": tally.endorse_votes,
+        "total_votes": tally.total_votes,
+        "participation_ratio": tally.participation_ratio,
+        "flag_ratio": tally.flag_ratio,
+        "threshold_reason": tally.threshold_reason,
+    }
+
+
 def build_warn_alert_entry(tally: HealthReportTally, report_path: Path) -> dict[str, Any]:
     return {
         "timestamp": format_utc(utc_now()),
@@ -410,6 +426,22 @@ def enforce_governance(report: HealthReport, config: EnforcementConfig, report_p
         if update.changed:
             config.rippled_cfg_path.write_text(update.updated_text)
             print(f"[CONFIG] write_status=updated removed={json.dumps(list(update.removed_keys))}")
+
+            removed_lookup = set(update.removed_keys)
+            for tally in jail_tallies:
+                if tally.target_validator_address not in removed_lookup:
+                    continue
+                alert_entry = build_jail_alert_entry(tally, report_path)
+                append_jsonl(config.alert_log_path, alert_entry)
+                print(
+                    "[ALERT] "
+                    f"target={tally.target_validator_address} "
+                    f"action=jail "
+                    f"log_path={config.alert_log_path} "
+                    f"flag_ratio={format_ratio(tally.flag_ratio)} "
+                    f"participation={format_ratio(tally.participation_ratio)}"
+                )
+
             if update.diff:
                 print("[CONFIG_DIFF]")
                 print(update.diff)

@@ -182,9 +182,10 @@ https://vl.postfiat.example
         self.assertIn(warned_validator, updated_cfg)
         self.assertIn(healthy_validator, updated_cfg)
 
-        self.assertEqual(len(alert_entries), 1)
-        self.assertEqual(alert_entries[0]["event"], "UNL_WARN_ALERT")
-        self.assertEqual(alert_entries[0]["target_validator_address"], warned_validator)
+        self.assertEqual(len(alert_entries), 2)
+        alert_events = {entry["event"]: entry for entry in alert_entries}
+        self.assertEqual(alert_events["UNL_JAIL_ENFORCED"]["target_validator_address"], jailed_validator)
+        self.assertEqual(alert_events["UNL_WARN_ALERT"]["target_validator_address"], warned_validator)
 
         self.assertEqual(len(recheck_entries), 1)
         self.assertEqual(recheck_entries[0]["event"], "UNL_WARN_RECHECK_SCHEDULED")
